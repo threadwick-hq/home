@@ -10,8 +10,8 @@ const LOGO_PATH =
 function Mark({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 640 640" aria-hidden focusable="false">
-      <rect width="640" height="640" rx="140" fill={colors.primary} />
-      <g transform="translate(51.2 51.2) scale(0.84)" fill="#fff">
+      <rect width="640" height="640" rx="144" fill={colors.primary} />
+      <g transform="translate(320 320) scale(0.66) translate(-320 -320)" fill="#fff">
         <path d={LOGO_PATH} />
       </g>
     </svg>
