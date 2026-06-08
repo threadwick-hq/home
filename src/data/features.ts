@@ -33,7 +33,7 @@ export const FEATURES: Feature[] = [
   },
   {
     icon: CloudUpload,
-    title: 'Always free, better with an account',
+    title: 'Always free',
     body: 'Use it free with no account. Sign in when you want to sync, back up, and reach your work across devices.',
   },
   {
