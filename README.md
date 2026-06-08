@@ -21,20 +21,17 @@ npm run preview    # serve the production build locally
 
 ## The "Open Studio" link
 
-Every call to action points at one place, resolved in `src/config.ts`:
+Every call to action points at `/studio`, resolved in `src/config.ts`:
 
 1. `VITE_STUDIO_URL` — explicit override (e.g. a local Studio dev server)
-2. production build → `/studio` (served by the Vercel rewrite, see below)
-3. dev / preview → the live Studio URL, so the link works before the rewrite exists
+2. otherwise `/studio` (served by the Vercel rewrite, see below)
 
-Override it for local testing:
+`/studio` only resolves where the rewrite exists (production and Vercel previews); in a bare local
+`vite dev`/`preview` it **404s — that's expected**. Point it somewhere real for local testing:
 
 ```bash
 VITE_STUDIO_URL=http://localhost:5173/ npm run dev
 ```
-
-> In `npm run preview` the CTA resolves to `/studio`, which **404s locally** — that's expected. Vercel
-> serves it in production. See the rewrite note below.
 
 ## Deploy (Vercel)
 

@@ -5,7 +5,7 @@ import { StitchLegend } from '../components/StitchLegend';
 import { colors } from '../theme/tokens';
 
 const points = [
-  'Place stitches in the order you’d crochet them — the chart grows as you go.',
+  'Place stitches in the order you’d crochet them — the chart grows round by round as you go.',
   'No fiddly counting or symmetry math; Threadwick works out the spacing for you.',
   'Charts use the standard crochet symbols, so they’re easy for anyone to read.',
 ];
@@ -18,13 +18,15 @@ export function DesignApproach() {
       style={{ background: colors.bgContainer, borderBlock: `1px solid ${colors.borderSecondary}` }}
     >
       <div className="tw-container">
-        <Row gutter={[48, 40]} align="top">
-          <Col xs={24} md={11}>
+        {/* Text comes first in the DOM (mobile reads heading-first); on desktop the
+            tiles are ordered to the left and the text to the right. */}
+        <Row gutter={[48, 40]} align="middle">
+          <Col xs={24} md={{ span: 11, order: 2 }}>
             <SectionHeading
               id="approach-title"
-              eyebrow="Charting, made natural"
-              title="Design the way you make it"
-              lead="Threadwick follows how you actually crochet. You build a chart stitch by stitch, and it keeps everything lined up — no graph-paper guesswork."
+              eyebrow="Crochet · granny squares"
+              title="Chart granny squares the way you crochet them"
+              lead="Threadwick Studio starts with crochet granny squares. Build a chart stitch by stitch — it follows how you actually crochet and keeps every round lined up, with no graph-paper guesswork."
             />
             <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 14 }}>
               {points.map((p) => (
@@ -51,7 +53,7 @@ export function DesignApproach() {
             </ul>
           </Col>
 
-          <Col xs={24} md={13}>
+          <Col xs={24} md={{ span: 13, order: 1 }}>
             <h3 style={{ margin: '0 0 14px', fontSize: 16, color: colors.text }}>
               The symbols you’ll see
             </h3>

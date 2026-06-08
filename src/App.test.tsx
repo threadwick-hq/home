@@ -31,7 +31,7 @@ describe('App', () => {
   it('renders key content sections', () => {
     renderApp();
     const main = screen.getByRole('main');
-    expect(within(main).getByRole('heading', { name: /design the way you make it/i })).toBeInTheDocument();
+    expect(within(main).getByRole('heading', { name: /chart granny squares the way you crochet them/i })).toBeInTheDocument();
     expect(within(main).getByRole('heading', { name: /made for keeping projects together/i })).toBeInTheDocument();
     expect(within(main).getByRole('heading', { name: /from idea to chart in minutes/i })).toBeInTheDocument();
     expect(within(main).getByRole('heading', { name: /good to know/i })).toBeInTheDocument();
