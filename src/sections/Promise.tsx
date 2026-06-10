@@ -1,5 +1,6 @@
 import { PLEDGES } from '../data/promise';
 import { colors } from '../theme/tokens';
+import './promise.css';
 
 const CREAM = colors.bgLayout;
 
@@ -38,17 +39,7 @@ export function OurPromise() {
           </p>
         </div>
 
-        <ul
-          style={{
-            listStyle: 'none',
-            margin: '0 auto',
-            padding: 0,
-            maxWidth: 1000,
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
-            gap: 'clamp(28px, 3.4vw, 44px)',
-          }}
-        >
+        <ul className="tw-pledges">
           {PLEDGES.map(({ icon: Icon, title, body }) => (
             <li key={title} style={{ textAlign: 'center' }}>
               <span
