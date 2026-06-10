@@ -25,6 +25,7 @@
   "dependencies": {
     "@fontsource/inter": "^5.1.0",
     "@fontsource/space-grotesk": "^5.2.10",
+    "@vercel/microfrontends": "^2.3.6",
     "antd": "^5.22.0",
     "iconoir-react": "^7.11.0",
     "react": "^18.3.1",

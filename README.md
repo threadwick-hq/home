@@ -23,31 +23,49 @@ npm run preview    # serve the production build locally
 
 Every call to action points at `/studio`, resolved in `src/config.ts`:
 
-1. `VITE_STUDIO_URL` — explicit override (e.g. a local Studio dev server)
-2. otherwise `/studio` (served by the Vercel rewrite, see below)
+1. `VITE_STUDIO_URL` — explicit override (e.g. a local Studio dev server / microfrontends proxy)
+2. otherwise `/studio` (routed to the Studio by the microfrontends group, see Deploy)
 
-`/studio` only resolves where the rewrite exists (production and Vercel previews); in a bare local
-`vite dev`/`preview` it **404s — that's expected**. Point it somewhere real for local testing:
+`/studio` only resolves where microfrontends routing exists (production and Vercel previews, or the local
+proxy); in a bare `vite dev` it **404s — that's expected**. Use the microfrontends proxy (below) or point
+it somewhere real:
 
 ```bash
 VITE_STUDIO_URL=http://localhost:5173/ npm run dev
 ```
 
-## Deploy (Vercel)
+## Deploy (Vercel Microfrontends)
 
-1. Import this repo in Vercel. It auto-detects Vite (build `npm run build`, output `dist`).
-2. Add the domain `threadwick.com` in the Vercel dashboard and point DNS as Vercel instructs.
-3. Production deploys from the default branch; every PR/branch gets an automatic preview URL.
+`threadwick.com` is served as a **microfrontends group**: this repo is the **default app** (serves `/` and
+owns the domain), and the Studio is a **child app** mounted at `/studio`. Routing lives in
+[`microfrontends.json`](./microfrontends.json) and is handled at Vercel's edge — no manual rewrites.
 
-`vercel.json` rewrites `/studio/*` to the Studio so both live under one domain — no GitHub Pages and no
-Cloudflare needed.
+```jsonc
+{
+  "applications": {
+    "threadwick-home": {},                  // default app: serves / + any unmatched route
+    "threadwick-studio": {                  // child app
+      "routing": [{ "paths": ["/studio", "/studio/:path*"] }]
+    }
+  }
+}
+```
 
-### ⚠️ `/studio` coordination (Studio repo)
+**One-time setup (manual):**
 
-The Studio (`Eiluviann/threadwick`) currently builds with Vite `base: '/threadwick/'`, so its assets load
-from `/threadwick/...` and **won't resolve under `/studio`** until its `base` is set to `/studio/` (or the
-rewrite is extended to also proxy the asset path). Until that's coordinated, this homepage's CTA uses the
-live Studio URL fallback in non-production builds.
+1. Import the Studio repo (`Eiluviann/threadwick`) into Vercel as a project named **`threadwick-studio`**
+   — the name must match the key in `microfrontends.json`.
+2. In the Studio repo: set Vite `base: '/studio/'` and add the `@vercel/microfrontends` Vite plugin
+   (`@vercel/microfrontends/experimental/vite`) so its assets resolve under `/studio`.
+3. Vercel → Team **Settings → Microfrontends → Create Group**; add `threadwick-home` (choose it as the
+   **default**) and `threadwick-studio`.
+4. Attach `threadwick.com` to **threadwick-home only** (a Vercel domain can be on a single project).
+5. Deploy both. `/studio` now routes to the Studio at the edge; the homepage CTA (`/studio`) just works.
+
+**Local dev** (both apps on one origin): start each app's dev server, then run the microfrontends proxy
+(`npx vercel microfrontends dev`, default port `:3024`). Linked projects in the group resolve
+automatically; the default app's `development.fallback` (its `.vercel.app` domain) lets the proxy reach a
+deployed app you're not running locally — add one per app to override.
 
 ## Assets
 
