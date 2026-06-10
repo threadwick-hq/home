@@ -79,7 +79,7 @@ export const PLANNED_FEATURES: PlannedFeature[] = [
     audience: 'artists',
     size: 'wide',
     accent: 'wash',
-    title: 'A marketplace that’s fair to makers',
+    title: 'A marketplace that’s fair to fiber artists',
     body: 'A completely optional way to sell: publish your patterns for others to browse and buy, we handle the payments — and you keep most of the revenue.',
   },
   {
