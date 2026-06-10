@@ -22,7 +22,8 @@ function chipStyle(feature: PlannedFeature): CSSProperties {
   }
   switch (feature.audience) {
     case 'artists':
-      return { ...base, background: colors.primaryWash, color: colors.primaryActive };
+      // Soft lavender — distinct from the terracotta brand accents and the sage makers chip.
+      return { ...base, background: '#eae4f2', color: '#62518a' };
     case 'you':
       // Warm sage — a caring, handmade complement to the terracotta artists chip.
       return { ...base, background: '#e6ede0', color: '#4e6a44' };
