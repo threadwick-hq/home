@@ -1,7 +1,9 @@
 import {
+  Code,
   Computer,
   EditPencil,
   Eye,
+  Fingerprint,
   Folder,
   Key,
   Link,
@@ -40,7 +42,7 @@ export interface PlannedFeature {
 /**
  * Planned features ("What's on the hook"), in display order — which is also
  * the mobile stacking order, so it runs most- to least-flagship.
- * Desktop spans are planned to fill 4-column rows exactly (20 cells / 5 rows).
+ * Desktop spans are planned to fill 4-column rows exactly (24 cells / 6 rows).
  */
 export const PLANNED_FEATURES: PlannedFeature[] = [
   {
@@ -86,6 +88,20 @@ export const PLANNED_FEATURES: PlannedFeature[] = [
     size: 'wide',
     title: 'Sell directly to your buyers',
     body: 'Issue license keys for your patterns. Buyers pay you directly and redeem their key in the app for permanent access — and this stays, even after the marketplace arrives.',
+  },
+  {
+    icon: Fingerprint,
+    audience: 'artists',
+    size: 'wide',
+    title: 'Every copy carries an invisible signature',
+    body: 'Exports are fingerprinted invisibly. If a pattern turns up somewhere it shouldn’t, inspect the file and see exactly which copy it came from — protection for you, with no DRM hassle for honest makers.',
+  },
+  {
+    icon: Code,
+    audience: 'artists',
+    size: 'wide',
+    title: 'An API for your workflow',
+    body: 'Plug Threadwick into your own systems or Ravelry, and generate personalized, fingerprinted PDFs for every buyer — automatically.',
   },
   {
     icon: Eye,

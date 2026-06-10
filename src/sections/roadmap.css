@@ -1,6 +1,6 @@
 /* Bento grid for the "What's on the hook" roadmap section.
    Desktop tile spans are planned in src/data/planned.ts to fill 4-column
-   rows exactly (20 cells = 5 rows). */
+   rows exactly (24 cells = 6 rows). */
 
 .tw-bento {
   list-style: none;
