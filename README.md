@@ -67,6 +67,26 @@ owns the domain), and the Studio is a **child app** mounted at `/studio`. Routin
 automatically; the default app's `development.fallback` (its `.vercel.app` domain) lets the proxy reach a
 deployed app you're not running locally — add one per app to override.
 
+## SEO, social & AI-agent discovery
+
+The page is a client-rendered SPA, so the build **prerenders** the homepage to static HTML — without
+it, crawlers and AI agents that don't run JavaScript would see an empty `#root`. `npm run build` runs:
+
+1. `vite build` — the normal client bundle.
+2. `npm run prerender` → `build:ssr` (renders `src/entry-server.tsx` to `dist-ssr/`) then
+   `scripts/prerender.mjs`, which bakes the rendered markup into `dist/index.html` and injects the
+   FAQ structured data. The client bundle still hydrates the page on load for interactivity.
+
+Other discovery assets:
+
+- `index.html` — title/description, Open Graph + Twitter cards, and JSON-LD structured data
+  (`Organization`, `WebSite`, `WebApplication`). The `FAQPage` block is generated from
+  `src/data/faqs.ts` at build time so it can't drift from the page.
+- `public/robots.txt` — welcomes search engines and AI crawlers; points to the sitemap.
+- `public/sitemap.xml` — the homepage and `/studio`.
+- `public/llms.txt` — a plain-language summary of Threadwick for AI agents (see llmstxt.org).
+- `public/site.webmanifest` — PWA manifest (name, icons, theme).
+
 ## Assets
 
 - `public/favicon.svg` — the brand mark.
