@@ -30,21 +30,23 @@ const ROOT = '<div id="root"></div>';
 if (!html.includes(ROOT)) {
   throw new Error(`prerender: could not find ${ROOT} in dist/index.html`);
 }
-html = html.replace(ROOT, `<div id="root">${appHtml}</div>`);
+// Function replacers: string replacements would interpret "$" sequences ($&, $`,
+// $$, …) in the rendered markup / JSON, corrupting the output if copy ever has one.
+html = html.replace(ROOT, () => `<div id="root">${appHtml}</div>`);
 
 // 2) Inject the data-derived FAQPage JSON-LD just before </head>. Escaping "<"
 //    keeps a stray "</script>" in the copy from breaking out of the tag.
 const faq = JSON.stringify(faqJsonLd()).replace(/</g, '\\u003c');
 const faqScript = `    <script type="application/ld+json">${faq}</script>\n  </head>`;
-html = html.replace('</head>', faqScript);
+html = html.replace('</head>', () => faqScript);
 
 // 3) Guard against silently shipping an empty page: the things crawlers and AI
 //    agents rely on must actually be present in the output.
 const required = [
-  'Design your stitches the way you make them', // hero <h1>
+  'Design your stitches the way you make them', // hero <h1> — render() produced content
+  'Everything in one place', // a feature card — deep content, not just the shell
   'Good to know', // FAQ section heading
-  '"@type":"FAQPage"', // injected structured data
-  'application/ld+json', // base structured data graph
+  '"@type":"FAQPage"', // the FAQ JSON-LD injected in step 2 (not present pre-injection)
 ];
 const missing = required.filter((needle) => !html.includes(needle));
 if (missing.length > 0) {
