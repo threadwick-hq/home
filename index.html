@@ -127,13 +127,8 @@
   </head>
   <body>
     <div id="root"></div>
-    <noscript>
-      <p>
-        Threadwick is most useful with JavaScript enabled. You can still read about it on this
-        page and open the studio directly at
-        <a href="/studio">threadwick.com/studio</a>.
-      </p>
-    </noscript>
+    <!-- Dev/build entry only: the production page is prerendered to static HTML + CSS
+         and this script is stripped, so the shipped page ships no JavaScript. -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -1,22 +1,33 @@
 /**
- * Server entry used at build time to prerender the homepage to static HTML
- * (see scripts/prerender.mjs). The homepage is a client-rendered SPA, so without
- * this step crawlers and AI agents that don't execute JavaScript would see an
- * empty shell. Prerendering bakes the real content into dist/index.html; the
- * client still fully renders on load for interactivity.
+ * Server entry used at build time to prerender the homepage to fully static
+ * HTML + CSS (see scripts/prerender.mjs). The landing page ships no client-side
+ * JavaScript: the markup is baked in here and Ant Design's styles are extracted
+ * to <style> tags, so crawlers, AI agents and people all get the finished page on
+ * first paint with nothing to download or execute. (The two interactive bits —
+ * the FAQ accordion and the US/UK toggle — are native <details> and a CSS :has()
+ * radio toggle, so they work without a runtime.)
  */
 import { renderToString } from 'react-dom/server';
+import { createCache, extractStyle, StyleProvider } from '@ant-design/cssinjs';
 import App from './App';
 import { AppProviders } from './providers/AppProviders';
 import { FAQS } from './data/faqs';
 
-/** Render the full marketing page to a static HTML string for the <div id="root">. */
-export function render(): string {
-  return renderToString(
-    <AppProviders>
-      <App />
-    </AppProviders>,
+/**
+ * Render the full marketing page to static HTML plus the Ant Design styles it
+ * uses. `styles` is a string of <style> tags to drop into <head>; without it the
+ * antd components would be unstyled once we stop shipping the runtime.
+ */
+export function render(): { html: string; styles: string } {
+  const cache = createCache();
+  const html = renderToString(
+    <StyleProvider cache={cache}>
+      <AppProviders>
+        <App />
+      </AppProviders>
+    </StyleProvider>,
   );
+  return { html, styles: extractStyle(cache) };
 }
 
 /**
