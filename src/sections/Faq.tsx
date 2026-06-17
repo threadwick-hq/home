@@ -6,7 +6,9 @@ import './faq.css';
 /**
  * FAQ accordion built from native <details>, so it works with zero JavaScript
  * (this page ships none) and keeps every answer in the DOM for search engines and
- * AI agents. The first item starts open, matching the previous default.
+ * AI agents. The shared `name` makes it an exclusive accordion (one open at a time,
+ * like the previous antd Collapse) where supported, degrading to multi-open
+ * elsewhere; the first item starts open, matching the previous default.
  */
 export function Faq() {
   return (
@@ -19,7 +21,7 @@ export function Faq() {
         <SectionHeading id="faq-title" eyebrow="Questions" title="Good to know" align="center" />
         <div className="tw-faq">
           {FAQS.map((faq, i) => (
-            <details key={faq.q} className="tw-faq__item" open={i === 0}>
+            <details key={faq.q} className="tw-faq__item" name="threadwick-faq" open={i === 0}>
               <summary className="tw-faq__q">{faq.q}</summary>
               <p className="tw-faq__a">{faq.a}</p>
             </details>

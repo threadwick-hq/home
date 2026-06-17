@@ -52,18 +52,14 @@ for (const m of [...html.matchAll(/[ \t]*<link\b[^>]*\brel="stylesheet"[^>]*>\n?
   } catch {
     continue; // leave the link in place if the file can't be read
   }
-  html = html.replace(tag, () => `    <style>${css}</style>\n`);
+  // Neutralize any "</style>"/"</script>" inside the CSS so it can't close the
+  // <style> we wrap it in early (these occur only in CSS strings/comments, where
+  // the backslash-escaped "/" is still valid).
+  const safeCss = css.replace(/<\/(style|script)/gi, '<\\/$1');
+  html = html.replace(tag, () => `    <style>${safeCss}</style>\n`);
 }
 
-// 3) Inject Ant Design's extracted styles last in <head> (so they layer over the
-//    inlined base CSS, matching how antd injects at runtime), then the
-//    data-derived FAQPage JSON-LD. Escaping "<" keeps a stray "</script>" in the
-//    copy from breaking out of the tag.
-const faq = JSON.stringify(faqJsonLd()).replace(/</g, '\\u003c');
-const headInjection = `    ${antdStyles}\n    <script type="application/ld+json">${faq}</script>\n  </head>`;
-html = html.replace('</head>', () => headInjection);
-
-// 4) Preload the above-the-fold web fonts (content-hashed each build, so resolve
+// 3) Preload the above-the-fold web fonts (content-hashed each build, so resolve
 //    them from dist/assets) so the hero text paints without a swap delay.
 //    crossorigin is required for font preloads to match the CORS font fetch.
 const fontFiles = readdirSync(assetsDir);
@@ -75,9 +71,18 @@ const fontPreloads = [
   .filter(Boolean)
   .map((f) => `    <link rel="preload" href="/assets/${f}" as="font" type="font/woff2" crossorigin />\n`)
   .join('');
-if (fontPreloads) {
-  html = html.replace('  </head>', () => `${fontPreloads}  </head>`);
-}
+
+// 4) Inject everything destined for <head> in one pass before </head> (no
+//    dependence on exact indentation): font preloads first (earliest for the
+//    preload scanner), then Ant Design's extracted styles (layered over the
+//    inlined base CSS, matching how antd injects at runtime), then the
+//    data-derived FAQPage JSON-LD. Escaping "<" keeps a stray "</script>" in the
+//    JSON from breaking out of the tag.
+const faq = JSON.stringify(faqJsonLd()).replace(/</g, '\\u003c');
+const headInjection =
+  `${fontPreloads}    ${antdStyles}\n` +
+  `    <script type="application/ld+json">${faq}</script>\n  </head>`;
+html = html.replace('</head>', () => headInjection);
 
 // 5) Strip the client JavaScript: this page is fully static, so the React/antd
 //    runtime never loads. Remove the module script and its modulepreload hints.
@@ -94,15 +99,22 @@ const required = [
   '<details', // the no-JS FAQ accordion
   'Single crochet', // US legend (the CSS-only US/UK toggle renders both)
   'Half treble', // UK legend
-  '.ant-', // Ant Design styles were extracted and inlined (step 3)
-  '"@type":"FAQPage"', // the FAQ JSON-LD injected in step 3
+  '.ant-', // Ant Design styles were extracted and inlined (step 4)
+  '"@type":"FAQPage"', // the FAQ JSON-LD injected in step 4
 ];
 const missing = required.filter((needle) => !html.includes(needle));
 if (missing.length > 0) {
   throw new Error(`prerender: output is missing expected content: ${missing.join(', ')}`);
 }
-if (/type="module"/.test(html)) {
+if (/<script\b[^>]*\btype="module"/i.test(html)) {
   throw new Error('prerender: a client <script type="module"> survived — the page would ship JS');
+}
+// All of dist/assets/*.{js,css} is about to be deleted (step 7); fail loudly if
+// the HTML still references one (e.g. a stylesheet link we didn't inline) instead
+// of shipping a 404.
+const dangling = [...html.matchAll(/(?:href|src)="(\/assets\/[^"]+\.(?:js|css))"/g)].map((m) => m[1]);
+if (dangling.length > 0) {
+  throw new Error(`prerender: HTML still references assets that step 7 deletes: ${dangling.join(', ')}`);
 }
 
 writeFileSync(htmlPath, html);

@@ -26,6 +26,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@ant-design/cssinjs": "^1.24.0",
     "@fontsource/inter": "^5.1.0",
     "@fontsource/space-grotesk": "^5.2.10",
     "@vercel/microfrontends": "^2.3.6",
