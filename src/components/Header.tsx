@@ -1,6 +1,6 @@
 import { colors } from '../theme/tokens';
 import { OpenStudioButton } from './OpenStudioButton';
-import { Wordmark } from './Wordmark';
+import { Wordmark } from '@threadwick/core/brand';
 
 /** Sticky, minimal header: wordmark (with tagline) + the single CTA. */
 export function Header() {

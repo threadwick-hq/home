@@ -1,7 +1,7 @@
 import { GithubCircle } from 'iconoir-react';
 import { STUDIO_IS_EXTERNAL, STUDIO_REPO_URL, STUDIO_URL } from '../config';
 import { colors } from '../theme/tokens';
-import { Wordmark } from './Wordmark';
+import { Wordmark } from '@threadwick/core/brand';
 
 const navLinks = [
   { href: '#promise', label: 'Our promise' },
