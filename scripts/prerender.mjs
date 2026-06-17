@@ -17,6 +17,12 @@ import { readFileSync, writeFileSync, readdirSync, rmSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
+// Render antd in production mode. `vite build --ssr` leaves process.env.NODE_ENV
+// as a runtime lookup, so without this the prerender runs antd in dev mode —
+// emitting bulkier CSS and "css-dev-only-do-not-override" class names. Set before
+// importing the server bundle so antd reads it at module-eval time.
+process.env.NODE_ENV ||= 'production';
+
 const here = dirname(fileURLToPath(import.meta.url));
 const distDir = resolve(here, '../dist');
 const assetsDir = resolve(distDir, 'assets');

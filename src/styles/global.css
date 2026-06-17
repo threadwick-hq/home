@@ -34,11 +34,14 @@ svg {
   max-width: 100%;
 }
 
-a {
+/* Content links. Scoped with :not(.ant-btn) so they don't override Ant Design's
+   (intentionally low-specificity) link-button styles — otherwise the Open Studio
+   button picks up the link color and a hover underline. */
+a:not(.ant-btn) {
   color: var(--tw-link);
   text-decoration: none;
 }
-a:hover {
+a:not(.ant-btn):hover {
   text-decoration: underline;
 }
 
