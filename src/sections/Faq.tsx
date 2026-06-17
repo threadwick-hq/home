@@ -1,18 +1,16 @@
-import { Collapse } from 'antd';
-import type { CollapseProps } from 'antd';
 import { FAQS } from '../data/faqs';
 import { SectionHeading } from '../components/SectionHeading';
 import { colors } from '../theme/tokens';
+import './faq.css';
 
+/**
+ * FAQ accordion built from native <details>, so it works with zero JavaScript
+ * (this page ships none) and keeps every answer in the DOM for search engines and
+ * AI agents. The shared `name` makes it an exclusive accordion (one open at a time,
+ * like the previous antd Collapse) where supported, degrading to multi-open
+ * elsewhere; the first item starts open, matching the previous default.
+ */
 export function Faq() {
-  const items: CollapseProps['items'] = FAQS.map((faq, i) => ({
-    key: String(i),
-    label: <span style={{ fontWeight: 600, fontSize: 16 }}>{faq.q}</span>,
-    children: (
-      <p style={{ margin: 0, color: colors.textSecondary, fontSize: 15, lineHeight: 1.6 }}>{faq.a}</p>
-    ),
-  }));
-
   return (
     <section
       aria-labelledby="faq-title"
@@ -21,7 +19,14 @@ export function Faq() {
     >
       <div className="tw-container" style={{ maxWidth: 760 }}>
         <SectionHeading id="faq-title" eyebrow="Questions" title="Good to know" align="center" />
-        <Collapse items={items} accordion bordered={false} defaultActiveKey={['0']} />
+        <div className="tw-faq">
+          {FAQS.map((faq, i) => (
+            <details key={faq.q} className="tw-faq__item" name="threadwick-faq" open={i === 0}>
+              <summary className="tw-faq__q">{faq.q}</summary>
+              <p className="tw-faq__a">{faq.a}</p>
+            </details>
+          ))}
+        </div>
       </div>
     </section>
   );

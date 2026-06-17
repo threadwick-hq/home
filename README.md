@@ -19,9 +19,10 @@ npm run build      # typecheck + lint + client build + SSR prerender -> dist/
 npm run preview    # serve the production build locally
 ```
 
-`build` runs the client build, then `prerender` (`build:ssr` + `scripts/prerender.mjs`). The prerender
-asserts the output actually contains the expected content, so a regression fails the build instead of
-silently shipping an empty page.
+`build` runs the client build, then `prerender` (`build:ssr` + `scripts/prerender.mjs`), which turns the
+output into a **fully static, zero-JavaScript** page (see [SEO, social & AI-agent discovery](#seo-social--ai-agent-discovery)).
+The prerender asserts the output actually contains the expected content, so a regression fails the build
+instead of silently shipping a broken page.
 
 ## The "Open Studio" link
 
@@ -73,18 +74,30 @@ deployed app you're not running locally — add one per app to override.
 
 ## SEO, social & AI-agent discovery
 
-The page is a client-rendered SPA, so the build **prerenders** the homepage to static HTML — without
-it, crawlers and AI agents that don't run JavaScript would see an empty `#root`. `npm run build` runs:
+This is a landing page, so the build ships it as a **fully static, zero-JavaScript** page. We author a
+normal React + Ant Design app, but the production build prerenders the whole thing to HTML + CSS and
+**strips the client runtime** — so crawlers, AI agents and people all get the finished, styled page on
+first paint with nothing to download or execute. (Shipping the ~220 KB gzipped React + antd bundle was
+the dominant mobile cost; now it's gone.) `npm run build` runs:
 
-1. `vite build` — the normal client bundle.
+1. `vite build` — the client build, used only to emit the CSS and font assets (its JS is discarded).
 2. `npm run prerender` → `build:ssr` (renders `src/entry-server.tsx` to `dist-ssr/`) then
-   `scripts/prerender.mjs`, which bakes the rendered markup into `dist/index.html`, injects the FAQ
-   structured data, asserts the content is present, and regenerates `dist/sitemap.xml` with a fresh
-   `<lastmod>`. The client bundle re-renders the page on load for interactivity (`createRoot`, not
-   hydration — so there's no hydration-mismatch risk).
+   `scripts/prerender.mjs`, which:
+   - bakes the rendered markup into `dist/index.html`;
+   - inlines Ant Design's extracted CSS-in-JS styles (so antd components are styled with no runtime) and
+     the build's own stylesheets (so there are no render-blocking CSS requests);
+   - preloads the above-the-fold fonts and injects the FAQ structured data;
+   - **strips the client `<script type="module">` and deletes the orphaned JS/CSS chunks**;
+   - asserts the content is present and the JS is gone, then regenerates `dist/sitemap.xml`.
 
-The prerendered HTML is verified two ways: `scripts/prerender.mjs` fails the build if expected content
-is missing, and `src/entry-server.test.tsx` asserts the SSR output and FAQ JSON-LD in `npm run test`.
+Because there's no client JS, the two interactive bits are native: the FAQ is a `<details>` accordion
+(`src/sections/Faq.tsx`) and the US/UK terminology switch is a CSS `:has()` radio toggle
+(`src/sections/DesignApproach.tsx`). Both work with zero JavaScript and keep their content in the DOM
+for crawlers. (`npm run dev` still runs the full React app for a normal dev experience.)
+
+The output is verified two ways: `scripts/prerender.mjs` fails the build if expected content is missing
+(or if any client JS survived), and `src/entry-server.test.tsx` asserts the SSR markup, the extracted
+antd styles, both US/UK legends, and the FAQ JSON-LD in `npm run test`.
 
 Other discovery assets:
 
@@ -97,9 +110,6 @@ Other discovery assets:
   real `<lastmod>` from the latest commit date).
 - `public/llms.txt` — a plain-language summary of Threadwick for AI agents (see llmstxt.org).
 - `public/site.webmanifest` — PWA manifest (name, icons, theme).
-
-The Vite build also splits heavy vendors (`react-vendor`, `antd-vendor`, `icons`) into cacheable chunks
-for better Core Web Vitals (see `manualChunks` in `vite.config.ts`).
 
 ## Assets
 

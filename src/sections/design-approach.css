@@ -1,0 +1,79 @@
+/* US/UK terminology toggle — a CSS-only segmented control. Native radio inputs
+   (visually hidden but focusable) drive which legend is shown via :has(), so the
+   switch works with no JavaScript. Tokens come from styles/tokens.css. */
+
+.tw-region__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.tw-segmented {
+  position: relative; /* contains the absolutely-positioned hidden inputs */
+  display: inline-flex;
+  gap: 2px;
+  margin: 0;
+  padding: 3px;
+  border: 0;
+  background: var(--tw-bg-sunken);
+  border-radius: 999px;
+}
+
+.tw-segmented__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.tw-segmented__label {
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--tw-text-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.tw-segmented__input:checked + .tw-segmented__label {
+  background: var(--tw-bg-container);
+  color: var(--tw-primary);
+  box-shadow: var(--tw-shadow-soft);
+}
+
+.tw-segmented__input:focus-visible + .tw-segmented__label {
+  outline: 2px solid var(--tw-primary);
+  outline-offset: 2px;
+}
+
+/* Default state shows US terms; the UK legend is revealed only when its radio is
+   checked. :has() lets the ancestor react to the nested input regardless of where
+   the radios sit in the markup. */
+.tw-region__legend--uk {
+  display: none;
+}
+.tw-region:has(#tw-region-uk:checked) .tw-region__legend--us {
+  display: none;
+}
+.tw-region:has(#tw-region-uk:checked) .tw-region__legend--uk {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tw-segmented__label {
+    transition: none;
+  }
+}

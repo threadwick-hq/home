@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import { Col, Row, Select } from 'antd';
+import { Col, Row } from 'antd';
 import { Check } from 'iconoir-react';
 import { SectionHeading } from '../components/SectionHeading';
 import { StitchLegend } from '../components/StitchLegend';
-import type { CrochetRegion } from '../data/stitches';
 import { colors } from '../theme/tokens';
+import './design-approach.css';
 
 const points = [
   'Place stitches in the order you’d crochet them — the chart grows round by round as you go.',
@@ -13,8 +12,6 @@ const points = [
 ];
 
 export function DesignApproach() {
-  const [region, setRegion] = useState<CrochetRegion>('US');
-
   return (
     <section
       aria-labelledby="approach-title"
@@ -58,30 +55,42 @@ export function DesignApproach() {
           </Col>
 
           <Col xs={24} md={{ span: 13, order: 1 }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 12,
-                flexWrap: 'wrap',
-                marginBottom: 14,
-              }}
-            >
-              <h3 style={{ margin: 0, fontSize: 16, color: colors.text }}>The symbols you’ll see</h3>
-              <Select<CrochetRegion>
-                size="small"
-                value={region}
-                onChange={setRegion}
-                aria-label="Choose crochet terminology"
-                style={{ minWidth: 116 }}
-                options={[
-                  { value: 'US', label: 'US terms' },
-                  { value: 'UK', label: 'UK terms' },
-                ]}
-              />
+            {/* US/UK terminology toggle with zero JavaScript: native radios drive
+                which legend shows via CSS :has(). Both legends are rendered so the
+                switch is instant and the content is in the DOM for crawlers. */}
+            <div className="tw-region">
+              <div className="tw-region__head">
+                <h3 style={{ margin: 0, fontSize: 16, color: colors.text }}>The symbols you’ll see</h3>
+                <fieldset className="tw-segmented">
+                  <legend className="tw-visually-hidden">Choose crochet terminology</legend>
+                  <input
+                    className="tw-segmented__input"
+                    type="radio"
+                    name="tw-region"
+                    id="tw-region-us"
+                    defaultChecked
+                  />
+                  <label className="tw-segmented__label" htmlFor="tw-region-us">
+                    US terms
+                  </label>
+                  <input
+                    className="tw-segmented__input"
+                    type="radio"
+                    name="tw-region"
+                    id="tw-region-uk"
+                  />
+                  <label className="tw-segmented__label" htmlFor="tw-region-uk">
+                    UK terms
+                  </label>
+                </fieldset>
+              </div>
+              <div className="tw-region__legend tw-region__legend--us">
+                <StitchLegend region="US" />
+              </div>
+              <div className="tw-region__legend tw-region__legend--uk">
+                <StitchLegend region="UK" />
+              </div>
             </div>
-            <StitchLegend region={region} />
           </Col>
         </Row>
       </div>

@@ -48,10 +48,6 @@ export const theme: ThemeConfig = {
     Card: {
       paddingLG: 24,
     },
-    Collapse: {
-      headerBg: 'transparent',
-      contentPadding: '4px 16px 16px',
-    },
     Steps: {
       iconSize: 36,
     },

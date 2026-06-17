@@ -4,14 +4,30 @@ import { FAQS } from './data/faqs';
 
 describe('entry-server (prerender)', () => {
   it('renders the real page content to a static HTML string', () => {
-    const html = render();
+    const { html } = render();
     // The things crawlers and AI agents rely on must be in the markup, not just
     // produced by client-side JS.
     expect(html).toContain('Design your stitches the way you make them'); // hero h1
     expect(html).toContain('Good to know'); // FAQ heading
     expect(html).toContain('Open Studio'); // primary CTA
     expect(html).toContain('Everything in one place'); // a feature
+    expect(html).toContain('<details'); // FAQ accordion works with no JS
     expect(html.length).toBeGreaterThan(5000);
+  });
+
+  it('extracts the Ant Design styles so the static page needs no runtime', () => {
+    const { styles } = render();
+    expect(styles).toContain('<style'); // returns <style> tags to inline in <head>
+    expect(styles).toContain('.ant-'); // antd component CSS was captured
+    expect(styles.length).toBeGreaterThan(1000);
+  });
+
+  it('renders both US and UK crochet terms for the CSS-only toggle', () => {
+    // Both legends are in the DOM; CSS :has() chooses which one shows, so the
+    // switch works without JavaScript and both are crawlable.
+    const { html } = render();
+    expect(html).toContain('Single crochet'); // US-only term
+    expect(html).toContain('Half treble'); // UK-only term
   });
 
   it('builds FAQPage structured data from the same copy the page renders', () => {

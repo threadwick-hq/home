@@ -1,3 +1,6 @@
+// Client entry used by `vite dev` and by the production client build (whose only
+// job is to emit the CSS/fonts — the production build is then prerendered to static
+// HTML and this JS is stripped, so it never ships; see scripts/prerender.mjs).
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 

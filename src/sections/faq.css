@@ -1,0 +1,60 @@
+/* Native <details> FAQ styled to match the terracotta theme — no JS required.
+   Tokens come from styles/tokens.css. */
+
+.tw-faq {
+  display: grid;
+  gap: 12px;
+}
+
+.tw-faq__item {
+  background: var(--tw-bg-container);
+  border: 1px solid var(--tw-border);
+  border-radius: var(--tw-radius-lg);
+  padding: 0 18px;
+}
+
+.tw-faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 0;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--tw-text);
+  cursor: pointer;
+  list-style: none; /* hide the default disclosure triangle (Firefox) */
+}
+.tw-faq__q::-webkit-details-marker {
+  display: none; /* …and in Safari/Chrome */
+}
+
+/* Chevron drawn from borders so it needs no icon font / SVG / JS. */
+.tw-faq__q::after {
+  content: '';
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  margin-right: 3px;
+  border-right: 2px solid var(--tw-text-tertiary);
+  border-bottom: 2px solid var(--tw-text-tertiary);
+  transform: rotate(45deg); /* points down when closed */
+  transition: transform 0.2s ease;
+}
+.tw-faq__item[open] .tw-faq__q::after {
+  transform: rotate(-135deg); /* points up when open */
+}
+
+.tw-faq__a {
+  margin: 0;
+  padding: 0 0 18px;
+  color: var(--tw-text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tw-faq__q::after {
+    transition: none;
+  }
+}
